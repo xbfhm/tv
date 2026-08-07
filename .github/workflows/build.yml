@@ -1,0 +1,45 @@
+name: Build Java APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract project zip
+        run: |
+          set -e
+          if [ -f ad5.1-java.zip ]; then unzip -q ad5.1-java.zip; fi
+          if [ -f ad51_java.zip ]; then unzip -q ad51_java.zip; fi
+          if [ -d ad51_java ]; then cd ad51_java; fi
+          ls -la
+          echo "PROJECT_DIR=$(pwd)" >> $GITHUB_ENV
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Build debug APK
+        run: gradle -p "$PROJECT_DIR" assembleDebug --no-daemon --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: animetv-java-apk
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/*.apk
+          overwrite: true
