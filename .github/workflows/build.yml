@@ -18,6 +18,8 @@ jobs:
       - name: Extract project zip
         run: |
           set -e
+          # 清理之前解压的旧工程目录, 避免 find 定位到旧版本
+          rm -rf ad5?_java 2>/dev/null || true
           # 选版本号最大的源码包 (仓库残留旧版 zip 也不会构建错版本)
           LATEST=$(ls ad5*-java.zip 2>/dev/null | sort -V | tail -1 || true)
           if [ -z "$LATEST" ]; then
