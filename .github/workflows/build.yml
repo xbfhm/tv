@@ -14,18 +14,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ---- 自动解压: 仓库根目录放 ad5.x-java.zip 即可, Actions 自动定位工程 ----
+      # ---- 自动解压: 仓库根目录放 ad5.x-java.zip 即可, 自动选版本号最新的构建 ----
       - name: Extract project zip
         run: |
           set -e
-          # 兼容 ad5.1 / ad5.2 及任意版本命名
-          for z in ad5*-java.zip ad5*.zip; do
-            if [ -f "$z" ]; then echo "解压: $z"; unzip -q -o "$z"; fi
-          done
+          # 选版本号最大的源码包 (仓库残留旧版 zip 也不会构建错版本)
+          LATEST=$(ls ad5*-java.zip 2>/dev/null | sort -V | tail -1 || true)
+          if [ -z "$LATEST" ]; then
+            echo "!! 未在仓库根目录找到 ad5*-java.zip, 请先上传源码包"
+            exit 1
+          fi
+          echo "使用源码包: $LATEST"
+          unzip -q -o "$LATEST"
           # 定位 Gradle 工程根 (含 settings.gradle 的目录)
           PROJ=$(dirname "$(find . -maxdepth 2 -name settings.gradle | head -1)")
-          if [ "$PROJ" = "." ]; then PROJ=""; fi
+          PROJ="${PROJ#./}"          # 去掉 './' 前缀 (upload-artifact 禁止相对路径)
+          if [ -z "$PROJ" ]; then PROJ="."; fi
           echo "PROJECT_DIR=$(pwd)/$PROJ" >> $GITHUB_ENV
+          echo "检测到工程目录: $PROJ"
           ls -la
 
       - name: Set up JDK 17
