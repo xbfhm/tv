@@ -14,16 +14,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ---- 自动解压: 仓库根目录放 ad5.x-java.zip 即可, 自动选版本号最新的构建 ----
+      # ---- 自动解压: 仓库根目录放 ad*-java.zip 即可, 自动选版本号最新的构建 ----
       - name: Extract project zip
         run: |
           set -e
           # 清理之前解压的旧工程目录, 避免 find 定位到旧版本
-          rm -rf ad5?_java 2>/dev/null || true
+          rm -rf ad*_java 2>/dev/null || true
           # 选版本号最大的源码包 (仓库残留旧版 zip 也不会构建错版本)
-          LATEST=$(ls ad5*-java.zip 2>/dev/null | sort -V | tail -1 || true)
+          LATEST=$(ls ad*-java.zip 2>/dev/null | sort -V | tail -1 || true)
           if [ -z "$LATEST" ]; then
-            echo "!! 未在仓库根目录找到 ad5*-java.zip, 请先上传源码包"
+            echo "!! 未在仓库根目录找到 ad*-java.zip, 请先上传源码包"
             exit 1
           fi
           echo "使用源码包: $LATEST"
