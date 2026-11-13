@@ -6,14 +6,14 @@
 </p>
 
 <p align="center">
-  <img alt="version" src="https://img.shields.io/badge/version-7.1-FF3D71">
+  <img alt="version" src="https://img.shields.io/badge/version-7.2-FF3D71">
   <img alt="minSdk" src="https://img.shields.io/badge/minSdk-21-7C5CFF">
   <img alt="targetSdk" src="https://img.shields.io/badge/targetSdk-26-7C5CFF">
   <img alt="license" src="https://img.shields.io/badge/license-GPL--3.0-blue">
 </p>
 
-> **v7.1**（2026-11）— 修复「所有线路都播不了」的致命 Bug，新增独立大库片源与跨源自动换源。
-> v7.0 的界面 / 键位 / 秒开优化全部保留。详细变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **v7.2**（2026-11）— 修复「点播放黑屏、返回键失效」，错误直接上屏，新增机内诊断信息。
+> v7.1 的跨源自动换源、v7.0 的界面 / 键位 / 秒开优化全部保留。详细变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ---
 
@@ -53,6 +53,17 @@
 | APK 体积 | ≈ 200MB（含浏览器内核） | **≈ 9MB** |
 
 ---
+
+## v7.2 重点（不再黑屏、返回必生效）
+
+| 现象 | 原因 | 处理 |
+|---|---|---|
+| 点播放后**全黑** | 播放页进入时控制条是隐藏的，起播失败就什么都看不到 | 进入即显示标题/进度/按钮；失败时画面中央显示「错误码 + 线路 + 地址」 |
+| **返回键没反应** | `IMMERSIVE_STICKY + HIDE_NAVIGATION` 全屏，部分 Android 5.x 电视会吞掉第一次 BACK | 只用 `FULLSCREEN`，并在 `dispatchKeyEvent` 最外层拦截，**一次退出** |
+| 卡在加载中 | 播放器没起来时没有任何反馈 | 「先画一帧再初始化播放器」+ 12 秒看门狗 + 10 秒后自动换源 |
+| 闪退只有黑屏，查不到原因 | 崩溃后进程直接被杀 | 崩溃会拉起 `CrashActivity` 显示堆栈；「设置 → 诊断信息」随时可看 |
+
+> 遥控器没有菜单键？**长按 OK** 也能打开「更多功能」。
 
 ## v7.1 重点（修复"播不了"）
 
