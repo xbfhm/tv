@@ -6,13 +6,13 @@
 </p>
 
 <p align="center">
-  <img alt="version" src="https://img.shields.io/badge/version-7.2-FF3D71">
+  <img alt="version" src="https://img.shields.io/badge/version-7.3-FF3D71">
   <img alt="minSdk" src="https://img.shields.io/badge/minSdk-21-7C5CFF">
   <img alt="targetSdk" src="https://img.shields.io/badge/targetSdk-26-7C5CFF">
   <img alt="license" src="https://img.shields.io/badge/license-GPL--3.0-blue">
 </p>
 
-> **v7.2**（2026-11）— 修复「点播放黑屏、返回键失效」，错误直接上屏，新增机内诊断信息。
+> **v7.3**（2026-11）— 修复播放页 `ClassCastException`（黑屏真因）；v7.2 的错误上屏与诊断信息保留。
 > v7.1 的跨源自动换源、v7.0 的界面 / 键位 / 秒开优化全部保留。详细变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ---
@@ -53,6 +53,12 @@
 | APK 体积 | ≈ 200MB（含浏览器内核） | **≈ 9MB** |
 
 ---
+
+## v7.3 修复（黑屏真因）
+
+播放页把 `menuPanel`(ScrollView) 和 6 个面板行(LinearLayout) 声明成了 `LinearLayout`/`TextView`，
+`bindViews()` 第一处强转就崩 → 黑屏。v7.3 全部改用 `View` 接收，并加了「布局控件类型 ↔ Java 字段类型」
+自动比对，当前 0 处不匹配。
 
 ## v7.2 重点（不再黑屏、返回必生效）
 
