@@ -1,0 +1,15 @@
+# 构建产物
+build/
+*/build/
+.gradle/
+local.properties
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 临时文件
+*.log
+*.tmp
+.DS_Store
